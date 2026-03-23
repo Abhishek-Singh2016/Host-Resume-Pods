@@ -28,7 +28,7 @@ spec:
       - path: /static
         pathType: Prefix
         backend:
-        service:
-        name: resume-service
-        port:
-          number: 80
+          service:
+            name: resume-service
+            port:
+              number: 80

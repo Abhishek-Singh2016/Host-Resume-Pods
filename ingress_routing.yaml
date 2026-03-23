@@ -2,9 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: app-ingress
-  annotations:
+  #annotations:
     # Optional: If your app doesn't expect the /api prefix, use a rewrite
-    nginx.ingress.kubernetes.io/rewrite-target: /
+  #  nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:

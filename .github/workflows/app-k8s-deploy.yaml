@@ -68,7 +68,7 @@ jobs:
           helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
           --namespace ingress-nginx --create-namespace \
           --set controller.service.annotations."service\.beta\.kubernetes\.io/do-loadbalancer-enable-proxy-protocol"="true" \
-          --set controller.config.use-proxy-protocol="true"
+          --set controller.config.use-proxy-protocol="false"
 
           kubectl apply -f ./ingress_routing.yaml --kubeconfig=./kubeconfig.yaml
           

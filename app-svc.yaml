@@ -11,7 +11,7 @@ kind: Service
 metadata:
   name: resume-service
   labels:
-    app: display-resume
+    app: resume-service
 spec:
   # by default this service is internal service, to make it external (app accesible from by external person through browser). default for internal is type: ClusterIP
   # nodeport is external service type

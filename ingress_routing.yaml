@@ -22,6 +22,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: Display-Resume
+            name: display-Resume
             port:
               number: 80

@@ -11,20 +11,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   # name of the deployment
-  name: python-Display-Resume
+  name: python-display-resume
   labels:
-     app: Display-Resume
+     app: display-Resume
 spec:
   # create 1 replica pods called webapp with each replica having a container based on the image named nanajanashia/k8s-demo-app:v1.0
   replicas: 1
   selector:
     # labels enable the system to query the cluster for objects that match a label with a specific name. Deployments make use of a label to find and group pods.
     matchLabels:
-      app: Display-Resume
+      app: display-resume
   template:
     metadata:
       labels:
-        app: Display-Resume
+        app: display-resume
     spec:
       volumes:
         # defines the volume named "log-volume" and associates it with the Persistent Volume Claim (PVC) log-pvc.
@@ -32,7 +32,7 @@ spec:
           persistentVolumeClaim:
             claimName: log-pvc
       containers:
-      - name: Display-Resume
+      - name: display-resume
         # name of the image that we re using to create the container. after building the image with docker, the image has to be uploaded to minikube
         image: 702175642104.dkr.ecr.us-east-1.amazonaws.com/abhishek-ecr/abhishek-ecr:$image_name-$TAG
         #mysql-db-$TAG

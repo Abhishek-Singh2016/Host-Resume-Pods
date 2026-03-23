@@ -9,9 +9,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: Resume-service
+  name: resume-service
   labels:
-    app: Display-Resume
+    app: display-resume
 spec:
   # by default this service is internal service, to make it external (app accesible from by external person through browser). default for internal is type: ClusterIP
   # nodeport is external service type
@@ -25,7 +25,7 @@ spec:
       # the service's port, the port number which is exposed by the service and on which other pods in the cluster will communicate with this service.
       # tried with 3307 and did not work
       port: 80
-      # the port of the pod that the service services
+      # thse port of the pod that the service services
       # tried with 3307 and did not work
       targetPort: 80
       # port for external service. this port will open on k8 nodes on which the app is. in k8 is between 30000-32767. search k8 docs for nodeport

@@ -1,5 +1,2 @@
 Flask
-Flask-MySQLdb
-flask-fontawesome
-mysqlclient
-newrelic
+pdfplumber

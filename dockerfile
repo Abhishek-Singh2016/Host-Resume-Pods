@@ -1,11 +1,5 @@
 FROM python:latest
 
-#RUN pip install --no-cache-dir newrelic
-
-#ENTRYPOINT ["newrelic-admin", "run-program"]
-
-#FROM python:latest
-
 # with k8s, when u exec into the python pod, with  -- /bin/bash , u the main.py and all other files in the folder are in /usr/app/src
 WORKDIR /usr/app/src
 

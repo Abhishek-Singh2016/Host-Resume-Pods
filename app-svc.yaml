@@ -18,7 +18,7 @@ spec:
   #type: LoadBalancer
   selector: 
     # this must match the label of the template app: in the deployment so that the service know what pod to service
-    app: Display-Resume
+    app: display-resume
   # service is reachable in the cluster usiing it s own ip and port
   ports:
     - protocol: TCP

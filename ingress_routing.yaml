@@ -15,7 +15,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: api-service
+            name: python-service
             port:
               number: 80
       - path: /resume

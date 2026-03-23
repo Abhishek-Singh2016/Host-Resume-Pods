@@ -62,10 +62,13 @@ jobs:
           envsubst < app-deployment-template.yaml > python-app-deployment.yaml
           kubectl apply -f ./python-app-deployment.yaml --kubeconfig=./kubeconfig.yaml
           kubectl apply -f ./app-svc.yaml --kubeconfig=./kubeconfig.yaml
+          #helm install step of ingress controller
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          helm repo update
           helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
           --namespace ingress-nginx --create-namespace \
-          --set controller.publishService.enabled=true \
-          --set controller.config.use-proxy-protocol="true" 
+          --set controller.service.annotations."service\.beta\.kubernetes\.io/do-loadbalancer-enable-proxy-protocol"="true" \
+          --set controller.config.use-proxy-protocol="true"
 
           kubectl apply -f ./ingress_routing.yaml --kubeconfig=./kubeconfig.yaml
           

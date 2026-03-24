@@ -29,7 +29,9 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2    
+        uses: aws-actions/amazon-ecr-login@v2
+      
+      
 
       - name: image creation and push to ecr
         env:
@@ -72,7 +74,36 @@ jobs:
 
           kubectl apply -f ./ingress_routing.yaml --kubeconfig=./kubeconfig.yaml
           
+      - name: Run Trivy scan on image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPO: abhishek-ecr/abhishek-ecr
+          TAG: v1.0.${{ github.run_number }}
+          KUBECONFIG: ./kubeconfig.yaml
+          image_name: ${{ github.event.inputs.image-name }}
+          SECRET_NAME: ecr-pull-image-secret
+          REGION: us-east-1
+          TARGET_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+          TARGET_NAMESPACE: default
+        # CRITICAL: Replace 'master' with the full commit SHA of a trusted version of aquasecurity/trivy-action
+        # The URL below goes to the action's repo for you to find the latest trusted SHA
+        uses: aquasecurity/trivy-action@master # Replace 'master' with a full SHA (e.g., @a0833a6...)
+        with:
+          # Use your image reference here
+          image-ref: '$ECR_REGISTRY/$REPO:${{ github.event.inputs.image-name }}-${{ env.TAG }}' 
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          # Fail the build if vulnerabilities are found
+          exit-code: '1' 
+          # Ignore vulnerabilities that do not have a fix available
+          ignore-unfixed: true 
 
+      - name: Upload scan results to GitHub Code Scanning
+        # Use a specific, immutable commit SHA for security
+        uses: github/codeql-action/upload-sarif@v3 
+        with:
+          sarif_file: 'trivy-results.sarif'    
 
 
   

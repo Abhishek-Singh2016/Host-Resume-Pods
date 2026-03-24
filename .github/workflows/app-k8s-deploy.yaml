@@ -91,7 +91,7 @@ jobs:
         uses: aquasecurity/trivy-action@master # Replace 'master' with a full SHA (e.g., @a0833a6...)
         with:
           # Use your image reference here
-          image-ref: '${{ github.event.inputs.image-name }}-${{ env.TAG }}' 
+          image-ref: '702175642104.dkr.ecr.us-east-1.amazonaws.com/abhishek-ecr/abhishek-ecr:${{ github.event.inputs.image-name }}-${{ env.TAG }}' 
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'

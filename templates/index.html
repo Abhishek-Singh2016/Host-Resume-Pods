@@ -8,17 +8,32 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f5f7; margin: 0; padding: 20px; }
         
-        .resume-container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .resume-container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-        /* Custom Toolbar */
-        .pdf-toolbar { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 10px 20px; border-radius: 8px 8px 0 0; }
-        .btn { background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        /* Fixed Toolbar Layout */
+        .pdf-toolbar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #2c3e50; 
+            color: white; 
+            padding: 12px 20px; 
+            flex-wrap: nowrap;
+        }
+
+        .control-group { display: flex; align-items: center; gap: 12px; }
+
+        .btn { background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; white-space: nowrap; text-decoration: none; font-size: 14px; }
         .btn:hover { background: #2980b9; }
-        .page-info { font-size: 14px; }
 
-        /* The actual viewport */
-        .viewer-box { display: flex; justify-content: center; align-items: center; background: #e9ecef; padding: 20px; border-radius: 0 0 8px 8px; overflow-x: auto; }
-        canvas { box-shadow: 0 4px 8px rgba(0,0,0,0.2); background: white; max-width: 100%; height: auto !important; }
+        .page-info { font-size: 14px; min-width: 100px; text-align: center; }
+
+        /* Viewport */
+        .viewer-box { display: flex; justify-content: center; background: #e9ecef; padding: 20px; overflow-y: auto; height: 80vh; }
+        canvas { box-shadow: 0 4px 15px rgba(0,0,0,0.3); background: white; max-width: 100%; }
+
+        /* Slider Styling */
+        input[type=range] { cursor: pointer; width: 100px; }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -27,29 +42,25 @@
 
 <div class="resume-container">
     <div class="pdf-toolbar">
-        <div>
+        <div class="control-group">
             <button class="btn" id="prev-page">Prev</button>
             <button class="btn" id="next-page">Next</button>
         </div>
-        <div class="pdf-toolbar">
-    <div>
-        <button class="btn" id="prev-page">Prev</button>
-        <button class="btn" id="next-page">Next</button>
-    </div>
-    
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 12px;">Zoom</span>
-        <input type="range" id="zoom-slider" min="0.5" max="3" step="0.1" value="1.5" style="cursor: pointer;">
-        <span id="zoom-percent" style="font-size: 12px; min-width: 40px;">150%</span>
-    </div>
 
-    <div class="page-info">
-        Page <span id="page-num"></span> of <span id="page-count"></span>
-    </div>
-    <div>
-        <a href="{{ url_for('static', filename='Abhishek_CKAD.pdf') }}" download class="btn" style="background: #27ae60;">Download PDF</a>
-    </div>
+        <div class="control-group">
+            <span style="font-size: 13px;">Zoom</span>
+            <input type="range" id="zoom-slider" min="0.5" max="3" step="0.1" value="1.5">
+            <span id="zoom-percent" style="font-size: 13px; width: 40px;">150%</span>
+        </div>
 
+        <div class="page-info">
+            Page <span id="page-num"></span> / <span id="page-count"></span>
+        </div>
+
+        <div>
+            <a href="{{ url_for('static', filename='Abhishek_CKAD.pdf') }}" download class="btn" style="background: #27ae60;">Download PDF</a>
+        </div>
+    </div>
 
     <div class="viewer-box">
         <canvas id="pdf-canvas"></canvas>
@@ -57,40 +68,24 @@
 </div>
 
 <script>
-    // Point to your Flask static file
     const url = "{{ url_for('static', filename='Abhishek_CKAD.pdf') }}";
 
-    // PDF.js worker setup
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
     let pdfDoc = null,
         pageNum = 1,
         pageIsRendering = false,
-        pageNumPending = null;
+        pageNumPending = null,
+        scale = 1.5; 
 
-    // Change 'const scale' to 'let scale' in your existing code
-    let scale = 1.5; 
-
+    const canvas = document.getElementById('pdf-canvas');
+    const ctx = canvas.getContext('2d');
     const zoomSlider = document.getElementById('zoom-slider');
     const zoomPercent = document.getElementById('zoom-percent');
-
-// Add Slider Event Listener
-    zoomSlider.addEventListener('input', (e) => {
-        scale = parseFloat(e.target.value);
-        zoomPercent.textContent = `${Math.round(scale * 100)}%`;
-    
-    // Trigger a re-render of the current page with new scale
-        if (pdfDoc) {
-            queueRenderPage(pageNum);
-    }
-});
-          canvas = document.getElementById('pdf-canvas'),
-          ctx = canvas.getContext('2d');
 
     // Render the page
     const renderPage = num => {
         pageIsRendering = true;
-
         pdfDoc.getPage(num).then(page => {
             const viewport = page.getViewport({ scale });
             canvas.height = viewport.height;
@@ -103,19 +98,15 @@
 
             page.render(renderCtx).promise.then(() => {
                 pageIsRendering = false;
-
                 if (pageNumPending !== null) {
                     renderPage(pageNumPending);
                     pageNumPending = null;
                 }
             });
-
-            // Update page numbers in HTML
             document.getElementById('page-num').textContent = num;
         });
     };
 
-    // Check for pages rendering
     const queueRenderPage = num => {
         if (pageIsRendering) {
             pageNumPending = num;
@@ -124,25 +115,33 @@
         }
     };
 
-    // Show Previous Page
+    // Zoom Logic
+    zoomSlider.addEventListener('input', (e) => {
+        scale = parseFloat(e.target.value);
+        zoomPercent.textContent = `${Math.round(scale * 100)}%`;
+        if (pdfDoc) queueRenderPage(pageNum);
+    });
+
+    // Navigation Logic
     document.getElementById('prev-page').addEventListener('click', () => {
         if (pageNum <= 1) return;
         pageNum--;
         queueRenderPage(pageNum);
     });
 
-    // Show Next Page
     document.getElementById('next-page').addEventListener('click', () => {
         if (pageNum >= pdfDoc.numPages) return;
         pageNum++;
         queueRenderPage(pageNum);
     });
 
-    // Get Document
+    // Load Document
     pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
         pdfDoc = pdfDoc_;
         document.getElementById('page-count').textContent = pdfDoc.numPages;
         renderPage(pageNum);
+    }).catch(err => {
+        console.error('Error loading PDF: ', err);
     });
 </script>
 

@@ -20,7 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write   # Required for OIDC
-      contents: read    # Required for Checkout
+      contents: read
+      security-events: write
+      actions: read    # Required for Checkout
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

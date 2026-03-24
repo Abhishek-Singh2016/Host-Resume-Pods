@@ -60,6 +60,7 @@ jobs:
           docker build -f dockerfile -t $ECR_REGISTRY/$REPO:${{ github.event.inputs.image-name }}-${{ env.TAG }} .
           docker push $ECR_REGISTRY/$REPO:${{ github.event.inputs.image-name }}-${{ env.TAG }}
           pwd
+          docker image ls
           echo "702175642104.dkr.ecr.us-east-1.amazonaws.com/abhishek-ecr/abhishek-ecr:$image_name-$TAG"
           envsubst < app-deployment-template.yaml > python-app-deployment.yaml
           kubectl apply -f ./python-app-deployment.yaml --kubeconfig=./kubeconfig.yaml

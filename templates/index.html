@@ -31,6 +31,25 @@
             <button class="btn" id="prev-page">Prev</button>
             <button class="btn" id="next-page">Next</button>
         </div>
+        <div class="pdf-toolbar">
+    <div>
+        <button class="btn" id="prev-page">Prev</button>
+        <button class="btn" id="next-page">Next</button>
+    </div>
+    
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 12px;">Zoom</span>
+        <input type="range" id="zoom-slider" min="0.5" max="3" step="0.1" value="1.5" style="cursor: pointer;">
+        <span id="zoom-percent" style="font-size: 12px; min-width: 40px;">150%</span>
+    </div>
+
+    <div class="page-info">
+        Page <span id="page-num"></span> of <span id="page-count"></span>
+    </div>
+    <div>
+        <a href="{{ url_for('static', filename='Abhishek_CKAD.pdf') }}" download class="btn" style="background: #27ae60;">Download PDF</a>
+    </div>
+</div>
         <div class="page-info">
             Page <span id="page-num"></span> of <span id="page-count"></span>
         </div>
@@ -56,7 +75,22 @@
         pageIsRendering = false,
         pageNumPending = null;
 
-    const scale = 1.5, // Increase for sharper text, decrease for faster loading
+    // Change 'const scale' to 'let scale' in your existing code
+    let scale = 1.5; 
+
+    const zoomSlider = document.getElementById('zoom-slider');
+    const zoomPercent = document.getElementById('zoom-percent');
+
+// Add Slider Event Listener
+    zoomSlider.addEventListener('input', (e) => {
+        scale = parseFloat(e.target.value);
+        zoomPercent.textContent = `${Math.round(scale * 100)}%`;
+    
+    // Trigger a re-render of the current page with new scale
+        if (pdfDoc) {
+            queueRenderPage(pageNum);
+    }
+});
           canvas = document.getElementById('pdf-canvas'),
           ctx = canvas.getContext('2d');
 

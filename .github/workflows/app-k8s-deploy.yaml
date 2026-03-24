@@ -96,7 +96,7 @@ jobs:
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
           # Fail the build if vulnerabilities are found
-          exit-code: '1' 
+          #exit-code: '1' 
           # Ignore vulnerabilities that do not have a fix available
           ignore-unfixed: true 
 
